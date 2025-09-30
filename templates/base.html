@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="dropout prediction and early intervention system for educational institutions">
+    <title>{% block title %}Dropout Prediction System{% endblock %}</title>
+    
+
+    
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <!-- Additional page-specific styles -->
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <!-- Sidebar Header -->
+            <div class="sidebar-header">
+                <h1>🎓 EduPredict</h1>
+                <p class="sidebar-subtitle">Dropout Prevention System</p>
+            </div>
+            
+            <!-- Navigation Menu -->
+            <nav class="sidebar-nav">
+                {% if session.get('role') %}
+                    
+                    
+                    {% if session.get('role') == 'admin' %}
+                        <div class="nav-item">
+                            <a href="{{ url_for('admin_dashboard') }}" 
+                               class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                                <span class="nav-icon">👥</span>
+                                Students
+                            </a>
+                        </div>
+                       
+                        
+                    {% elif session.get('role') == 'student' %}
+                        <div class="nav-item">
+                            <a href="{{ url_for('student_dashboard') }}" 
+                               class="nav-link {% if request.endpoint == 'student_dashboard' %}active{% endif %}">
+                                <span class="nav-icon">👤</span>
+                                My Profile
+                            </a>
+                        </div>
+                        
+                    {% endif %}
+                {% else %}
+                    <div class="nav-item">
+                        <a href="{{ url_for('login') }}" class="nav-link">
+                            <span class="nav-icon">🔑</span>
+                            Login
+                        </a>
+                    </div>
+                {% endif %}
+            </nav>
+            
+            <!-- User Profile Section (shown when logged in) -->
+            {% if session.get('role') %}
+            
+             
+            
+            <!-- Logout Link -->
+            <div style="padding: 1rem 2rem;">
+                <a href="{{ url_for('logout') }}" class="btn btn-secondary btn-sm" style="width: 100%;">
+                    <span style="margin-right: 0.5rem;">🚪</span>
+                    Logout
+                </a>
+            </div>
+            {% endif %}
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">
+                        {% block page_title %}
+                            {% if session.get('role') == 'admin' %}
+                                Admin Dashboard
+                            {% elif session.get('role') == 'student' %}
+                                Student Dashboard  
+                            {% else %}
+                                Welcome to EduPredict AI
+                            {% endif %}
+                        {% endblock %}
+                    </h1>
+                   
+                </div>
+                
+                <div class="header-actions">
+                    {% block header_actions %}
+                        {% if session.get('role') == 'admin' %}
+                          
+                        {% endif %}
+                    {% endblock %}
+                </div>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash-message flash-{{ category }}">
+                                <span class="flash-icon">
+                                    {% if category == 'success' %}✅
+                                    {% elif category == 'error' %}❌
+                                    {% else %}ℹ️{% endif %}
+                                </span>
+                                <span class="flash-text">{{ message }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- Page Content -->
+            <div class="content-area fade-in">
+                {% block content %}
+                    <!-- Default Dashboard Content -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <span class="stat-title">Total Students</span>
+                                <div class="stat-icon">👥</div>
+                            </div>
+                            <div class="stat-value">1,247</div>
+                            <div class="stat-change positive">+12% from last month</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <span class="stat-title">At-Risk Students</span>
+                                <div class="stat-icon">⚠️</div>
+                            </div>
+                            <div class="stat-value">87</div>
+                            <div class="stat-change negative">+3% from last week</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <span class="stat-title">Intervention Success</span>
+                                <div class="stat-icon">✅</div>
+                            </div>
+                            <div class="stat-value">94%</div>
+                            <div class="stat-change positive">+2% from last month</div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-header">
+                                <span class="stat-title">Average Attendance</span>
+                                <div class="stat-icon">📊</div>
+                            </div>
+                            <div class="stat-value">85%</div>
+                            <div class="stat-change positive">+1% from last week</div>
+                        </div>
+                    </div>
+                {% endblock %}
+            </div>
+
+            <!-- Additional Content Sections -->
+            {% block extra_content %}{% endblock %}
+        </main>
+    </div>
+
+    <!-- Page-specific scripts -->
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

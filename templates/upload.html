@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Upload Center</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+          
+            <nav class="sidebar-nav">
+                
+                <div class="nav-item">
+                    <a href="{{ url_for('admin_dashboard')}}" class="nav-link">
+                        <span class="nav-icon">👥</span>
+                        Students
+                    </a>
+                </div>
+                <div class="nav-item">
+                    <a href="#" class="nav-link active">
+                        <span class="nav-icon">📤</span>
+                        Upload Data
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Success Message -->
+            <div class="flash-messages" id="flashMessages" style="display: none;">
+                <div class="flash-message success">
+                    <span class="flash-icon">✅</span>
+                    <span id="successText">File uploaded successfully! 25 records processed.</span>
+                </div>
+            </div>
+
+            <!-- Page Header -->
+            <div class="page-header">
+                <div>
+                    <h1 class="page-title">Data Upload Center</h1>
+                    <p class="page-subtitle">Import student data via CSV files</p>
+                </div>
+              
+            </div>
+
+            <!-- Upload Stats -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Total Records</span>
+                        <div class="stat-icon">📋</div>
+                    </div>
+                    <div class="stat-value" id="totalRecords">0</div>
+                    <div class="stat-change">Ready for upload</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <span class="stat-title">Upload Status</span>
+                        <div class="stat-icon">🚀</div>
+                    </div>
+                    <div class="stat-value">
+                        <span class="status-badge green" id="uploadStatus">Ready</span>
+                    </div>
+                    <div class="stat-change">Awaiting file selection</div>
+                </div>
+            </div>
+
+            <!-- Upload Section -->
+            <div class="data-table-container">
+                <div class="table-header">
+                    <h3 class="table-title">📤 Upload Student Data</h3>
+                    <div class="table-actions">
+                        <span class="file-requirements">CSV files only • Max 10MB</span>
+                    </div>
+                </div>
+                
+                <div class="upload-content">
+                    <!-- Drag & Drop Zone -->
+                    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+                        <div class="upload-icon">📁</div>
+                        <h4 class="upload-title">Drop your CSV file here</h4>
+                        <p class="upload-subtitle">or click to browse and select a file</p>
+                        <div class="upload-formats">
+                            <span class="format-tag">CSV</span>
+                            <span class="format-tag">UTF-8</span>
+                        </div>
+                    </div>
+
+                    <!-- Hidden File Input -->
+                    <input type="file" id="fileInput" accept=".csv" style="display: none;" onchange="handleFileSelect(event)">
+
+                    <!-- File Info -->
+                    <div class="file-info" id="fileInfo" style="display: none;">
+                        <div class="file-details">
+                            <div class="file-icon">📄</div>
+                            <div class="file-meta">
+                                <h5 class="file-name" id="fileName"></h5>
+                                <p class="file-stats" id="fileStats"></p>
+                            </div>
+                            <button class="btn btn-primary" onclick="uploadFile()" id="uploadBtn">
+                                🚀 Upload Data
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Format Requirements -->
+            <div class="data-table-container">
+                <div class="table-header">
+                    <h3 class="table-title">📋 Required CSV Format</h3>
+                </div>
+                <div class="requirements-content">
+                    <p><strong>Required Columns:</strong> student_id, attendance, marks, fee_status</p>
+                    <p><strong>Optional Columns:</strong> name, email</p>
+                    <p><strong>Example:</strong> student_id,name,attendance,marks,fee_status</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let currentFile = null;
+
+        // File selection handler
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.name.toLowerCase().endsWith('.csv')) {
+                alert('Please select a CSV file.');
+                return;
+            }
+
+            currentFile = file;
+            
+            // Show file info
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileStats').textContent = `${formatFileSize(file.size)} • Ready to upload`;
+            document.getElementById('fileInfo').style.display = 'block';
+            
+            // Update stats
+            document.getElementById('totalRecords').textContent = '...';
+            document.getElementById('uploadStatus').textContent = 'File Selected';
+        }
+
+        // Upload file
+        function uploadFile() {
+            if (!currentFile) return;
+            
+            const uploadBtn = document.getElementById('uploadBtn');
+            uploadBtn.textContent = '⏳ Uploading...';
+            uploadBtn.disabled = true;
+            
+            // Simulate upload
+            setTimeout(() => {
+                const recordCount = Math.floor(Math.random() * 50) + 10;
+                showSuccessMessage(`File uploaded successfully! ${recordCount} records processed.`);
+                
+                // Update UI
+                document.getElementById('totalRecords').textContent = recordCount;
+                document.getElementById('uploadStatus').textContent = 'Completed';
+                
+                uploadBtn.textContent = '✅ Uploaded';
+                uploadBtn.disabled = false;
+                
+                // Reset after 3 seconds
+                setTimeout(() => {
+                    resetUpload();
+                }, 3000);
+                
+            }, 2000);
+        }
+
+        // Show success message
+        function showSuccessMessage(message) {
+            document.getElementById('successText').textContent = message;
+            document.getElementById('flashMessages').style.display = 'block';
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                document.getElementById('flashMessages').style.display = 'none';
+            }, 5000);
+        }
+
+        // Reset upload state
+        function resetUpload() {
+            currentFile = null;
+            document.getElementById('fileInput').value = '';
+            document.getElementById('fileInfo').style.display = 'none';
+            document.getElementById('totalRecords').textContent = '0';
+            document.getElementById('uploadStatus').textContent = 'Ready';
+        }
+
+        // Download template
+        function downloadTemplate() {
+            const template = "student_id,name,attendance,marks,fee_status\nS101,John Doe,85,78,Paid\nS102,Jane Smith,92,88,Pending";
+            const blob = new Blob([template], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'student_template.csv';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Format file size
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        // Drag and drop
+        const uploadZone = document.getElementById('uploadZone');
+        
+        uploadZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadZone.style.borderColor = 'var(--accent-primary)';
+        });
+        
+        uploadZone.addEventListener('dragleave', () => {
+            uploadZone.style.borderColor = 'var(--border-light)';
+        });
+        
+        uploadZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadZone.style.borderColor = 'var(--border-light)';
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileSelect({ target: { files: files } });
+            }
+        });
+    </script>
+
+    <style>
+        .upload-content { padding: 2rem; }
+        
+        .upload-zone {
+            border: 3px dashed var(--border-light);
+            border-radius: var(--radius);
+            padding: 3rem 2rem;
+            text-align: center;
+            background: var(--bg-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-zone:hover {
+            border-color: var(--accent-primary);
+            background: rgba(59, 130, 246, 0.05);
+        }
+        
+        .upload-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.7; }
+        .upload-title { font-size: 1.5rem; font-weight: 600; margin: 0 0 0.5rem 0; }
+        .upload-subtitle { color: var(--text-muted); margin: 0 0 1.5rem 0; }
+        
+        .upload-formats { display: flex; justify-content: center; gap: 0.5rem; }
+        .format-tag {
+            background: var(--bg-secondary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            border: 1px solid var(--border);
+        }
+        
+        .file-info {
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+        
+        .file-details { display: flex; align-items: center; gap: 1rem; }
+        .file-icon { font-size: 2rem; }
+        .file-meta { flex: 1; }
+        .file-name { margin: 0 0 0.25rem 0; font-size: 1.125rem; font-weight: 600; }
+        .file-stats { margin: 0; color: var(--text-muted); font-size: 0.875rem; }
+        
+        .requirements-content { padding: 2rem; }
+        .requirements-content p { margin: 0.5rem 0; color: var(--text-secondary); }
+        
+        .file-requirements { color: var(--text-muted); font-size: 0.875rem; }
+    </style>
+</body>
+</html>

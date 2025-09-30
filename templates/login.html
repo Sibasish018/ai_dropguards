@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Login to EduPredict  - Advanced dropout prediction and early intervention system">
+    <title>Demo Access - EduPredict </title>
+    
+    
+    
+    <!-- Import Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Main Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    
+    <style>
+        /* Login-specific styles */
+        .login-page {
+            min-height: 100vh;
+            display: flex;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" opacity="0.03"><defs><radialGradient id="grad" cx="50%" cy="50%"><stop offset="0%" style="stop-color:white;stop-opacity:1" /><stop offset="100%" style="stop-color:white;stop-opacity:0" /></radialGradient></defs><circle cx="200" cy="300" r="100" fill="url(%23grad)"/><circle cx="800" cy="200" r="150" fill="url(%23grad)"/><circle cx="600" cy="700" r="120" fill="url(%23grad)"/></svg>') no-repeat center center;
+            background-size: cover;
+            pointer-events: none;
+        }
+
+        .login-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .login-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 3rem;
+            width: 100%;
+            max-width: 500px; /* Increased max width for buttons */
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(10px);
+            position: relative;
+            text-align: center; /* Center the buttons */
+        }
+
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--accent-gradient);
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .login-logo {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .login-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .login-subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.5;
+            max-width: 400px;
+            margin: 0 auto 2rem;
+        }
+        
+        /* New Demo Button Styles */
+        .demo-actions {
+            display: flex;
+            gap: 1.5rem;
+            flex-direction: column;
+        }
+        
+        .demo-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            border-radius: var(--radius);
+            font-weight: 600;
+            font-size: 1.125rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+        }
+
+        .demo-btn-admin {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .demo-btn-student {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+        }
+
+        .demo-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .demo-btn-admin:hover {
+             border-color: var(--accent-secondary);
+             background: rgba(139, 92, 246, 0.1);
+        }
+
+        .demo-btn-student:hover {
+            border-color: var(--accent-success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .demo-icon {
+            font-size: 2.5rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .demo-role {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .demo-note {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+
+        .flash-messages {
+            margin-bottom: 1.5rem;
+        }
+
+        .flash-message {
+            display: flex;
+            align-items: center;
+            padding: 1rem;
+            border-radius: var(--radius-sm);
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            animation: slideInDown 0.3s ease-out;
+        }
+
+        .flash-message.success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--accent-success);
+        }
+
+        .flash-message.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: var(--accent-danger);
+        }
+
+        .flash-icon {
+            margin-right: 0.75rem;
+            font-size: 1.125rem;
+        }
+
+        .system-features {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 50%;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4rem;
+            backdrop-filter: blur(20px);
+        }
+
+        .features-header {
+            margin-bottom: 3rem;
+        }
+
+        .features-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .features-subtitle {
+            font-size: 1.125rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+
+        .features-list {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .feature-icon-list {
+            width: 48px;
+            height: 48px;
+            background: var(--accent-gradient);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+
+        .feature-content h3 {
+            color: var(--text-primary);
+            font-weight: 600;
+            font-size: 1.125rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-content p {
+            color: var(--text-muted);
+            line-height: 1.5;
+            font-size: 0.875rem;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .system-features {
+                display: none;
+            }
+            
+            .login-container {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                padding: 1rem;
+            }
+            
+            .login-card {
+                padding: 2rem;
+            }
+            
+            .features-title {
+                font-size: 2rem;
+            }
+
+            .demo-actions {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    
+    <!-- System Features Section (Left Side) -->
+   
+   
+
+    <!-- Login Section (Right Side) -->
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-logo">🔑</div>
+                <h2 class="login-title">Access Demo Dashboard</h2>
+                <p class="login-subtitle">
+                    Select a role below to experience the system instantly. No credentials required for judging.
+                </p>
+            </div>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-messages">
+                        {% for category, message in messages %}
+                            <div class="flash-message flash-{{ category }}">
+                                <span class="flash-icon">
+                                    {% if category == 'success' %}✅
+                                    {% elif category == 'error' %}❌
+                                    {% else %}ℹ️{% endif %}
+                                </span>
+                                <span class="flash-text">{{ message }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            <!-- Demo Login Buttons -->
+            <div class="demo-actions">
+                <a href="{{ url_for('demo_login', role='admin') }}" class="demo-btn demo-btn-admin">
+                    <span class="demo-icon">👨‍💼</span>
+                    <span class="demo-role">Administrator Access</span>
+                    <span class="demo-note">   Full student overview and system controls        
+                                 (for reference of demo)
+                    </span>
+                </a>
+                
+                <a href="{{ url_for('demo_login', role='student') }}" class="demo-btn demo-btn-student">
+                    <span class="demo-icon">🧑‍🎓</span>
+                    <span class="demo-role">Student Access (Bob)</span>
+                    <span class="demo-note">Personal  performance  report  and  action  items
+                        (for reference of demo)
+                    </span>
+                </a>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        // Auto-dismiss flash messages
+        setTimeout(() => {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(msg => {
+                msg.style.opacity = '0';
+                msg.style.transform = 'translateY(-10px)';
+                setTimeout(() => msg.remove(), 300);
+            });
+        }, 5000);
+
+        // Add floating animation to login card
+        const loginCard = document.querySelector('.login-card');
+        setInterval(() => {
+            loginCard.style.transform = `translateY(${Math.sin(Date.now() * 0.001) * 2}px)`;
+        }, 16);
+    </script>
+</body>
+</html>

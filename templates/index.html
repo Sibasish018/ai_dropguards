@@ -1,0 +1,327 @@
+{% extends "base.html" %}
+
+{% block title %}EduPredict  - Dropout Prevention System{% endblock %}
+
+{% block page_title %}Welcome to EduPredict {% endblock %}
+
+{% block page_subtitle %}Intelligent dropout prediction and early intervention system for educational excellence{% endblock %}
+
+{% block header_actions %}
+<a href="{{ url_for('login') }}" class="btn btn-primary">
+    🔑 Login to Dashboard
+</a>
+{% endblock %}
+
+{% block content %}
+<!-- Hero Stats Overview -->
+
+
+<!-- System Features Overview -->
+<div class="data-table-container mb-4">
+    <div class="table-header">
+        <h2 class="table-title">🚀 System Features</h2>
+        
+    </div>
+    <div style="padding: 2rem;">
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Real-time Analytics</h3>
+                <p>Continuous monitoring of student performance metrics including attendance, marks, and fee status to identify patterns early.</p>
+                <div class="feature-tags">
+                    <span class="tag">Live Data</span>
+                    <span class="tag">Performance Tracking</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Risk Prediction</h3>
+                <p>Advanced AI algorithms analyze multiple data points to predict dropout risk with 96.8% accuracy, enabling proactive intervention.</p>
+                <div class="feature-tags">
+                    <span class="tag">Machine Learning</span>
+                    <span class="tag">Predictive Analytics</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📧</div>
+                <h3>Automated Alerts</h3>
+                <p>Intelligent notification system sends timely alerts to mentors, counselors, and guardians when students are flagged at-risk.</p>
+                <div class="feature-tags">
+                    <span class="tag">Email Notifications</span>
+                    <span class="tag">SMS Alerts</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">📈</div>
+                <h3>Comprehensive Reports</h3>
+                <p>Generate detailed analytics reports and visualizations to understand trends, track intervention success, and make data-driven decisions.</p>
+                <div class="feature-tags">
+                    <span class="tag">Data Visualization</span>
+                    <span class="tag">Export Options</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🔄</div>
+                <h3>Data Integration</h3>
+                <p>Seamlessly integrate existing spreadsheets and databases. Support for CSV uploads and automated data synchronization.</p>
+                <div class="feature-tags">
+                    <span class="tag">CSV Support</span>
+                    <span class="tag">API Integration</span>
+                </div>
+            </div>
+            
+            <div class="feature-card">
+                <div class="feature-icon">🛡️</div>
+                <h3>Secure & Compliant</h3>
+                <p>Enterprise-grade security with encrypted data storage, role-based access control, and compliance with educational data standards.</p>
+                <div class="feature-tags">
+                    <span class="tag">Data Security</span>
+                    <span class="tag">Privacy Compliant</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Risk Level Information -->
+<div class="data-table-container mb-4">
+    <div class="table-header">
+        <h2 class="table-title">📊 Risk Assessment Levels</h2>
+        <div class="table-actions">
+            <span class="status-badge yellow">Classification System</span>
+        </div>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Risk Level</th>
+                <th>Criteria</th>
+                <th>Action Required</th>
+                <th>Intervention Timeline</th>
+                <th>Success Rate</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="status-badge green">Low Risk</span></td>
+                <td>Attendance >75%, Marks >40%, Fees Paid</td>
+                <td>Routine Monitoring</td>
+                <td>Monthly Check-in</td>
+                <td>98.5%</td>
+            </tr>
+            <tr>
+                <td><span class="status-badge yellow">Medium Risk</span></td>
+                <td>One factor below threshold</td>
+                <td>Enhanced Support</td>
+                <td>Weekly Intervention</td>
+                <td>94.2%</td>
+            </tr>
+            <tr>
+                <td><span class="status-badge red">High Risk</span></td>
+                <td>Multiple factors below threshold</td>
+                <td>Immediate Intervention</td>
+                <td>Daily Support</td>
+                <td>87.3%</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- System Impact -->
+<div class="data-table-container">
+    <div class="table-header">
+        <h2 class="table-title">🎯 System Impact & Benefits</h2>
+        
+    </div>
+    <div style="padding: 2rem;">
+        <div class="impact-grid">
+            <div class="impact-item">
+                
+                <div class="impact-label">Reduction in Dropout Rates</div>
+                <div class="impact-description">Significant decrease in student dropouts across implementing institutions</div>
+            </div>
+            
+            <div class="impact-item">
+             
+                <div class="impact-label">Early Detection Success</div>
+                <div class="impact-description">Students identified 4-6 weeks before critical point</div>
+            </div>
+            
+            <div class="impact-item">
+               
+                <div class="impact-label">Counselor Efficiency</div>
+                <div class="impact-description">Improved targeted counseling and resource allocation</div>
+            </div>
+            
+            <div class="impact-item">
+             
+                <div class="impact-label">Administrative Time Saved</div>
+                <div class="impact-description">Automated processes reduce manual oversight workload</div>
+            </div>
+        </div>
+        
+        <div class="cta-section">
+            <h3>Ready to Transform Your Institution?</h3>
+            <p>Join hundreds of educational institutions already using EduPredict AI to improve student retention and success rates.</p>
+            <a href="{{ url_for('login') }}" class="btn btn-primary" style="margin-right: 1rem;">
+                🚀 Get Started Now
+            </a>
+            <a href="#" class="btn btn-secondary">
+                📖 Learn More
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Additional styles for index page */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.feature-card {
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 2rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    display: block;
+}
+
+.feature-card h3 {
+    color: var(--text-primary);
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.feature-card p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+.feature-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag {
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+    padding: 0.25rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    border: 1px solid var(--border);
+}
+
+.impact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2rem;
+    margin-bottom: 3rem;
+}
+
+.impact-item {
+    text-align: center;
+    padding: 1.5rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.impact-number {
+    font-size: 3rem;
+    font-weight: 800;
+    color: var(--accent-primary);
+    margin-bottom: 0.5rem;
+}
+
+.impact-label {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.impact-description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+.cta-section {
+    text-align: center;
+    padding: 3rem 2rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+}
+
+.cta-section h3 {
+    color: var(--text-primary);
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.cta-section p {
+    color: var(--text-secondary);
+    font-size: 1.125rem;
+    margin-bottom: 2rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+@media (max-width: 768px) {
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .impact-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .cta-section {
+        padding: 2rem 1rem;
+    }
+    
+    .cta-section .btn {
+        display: block;
+        width: 100%;
+        margin-bottom: 1rem;
+        margin-right: 0 !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .impact-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .feature-card {
+        padding: 1.5rem;
+    }
+}
+</style>
+{% endblock %}

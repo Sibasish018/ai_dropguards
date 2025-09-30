@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container" style="max-width: 1400px; margin: 0 auto; padding: 2rem;">
+
+    <div class="page-header fade-in">
+        <h1>🎓 Admin Dashboard</h1>
+        <p>Student Risk Prediction & Management System</p>
+    </div>
+
+    <div class="quick-actions-section fade-in">
+        <a href="{{ url_for('evaluate') }}" class="action-card">
+            <span class="action-icon">📊</span>
+            <div class="action-title">Run Analysis & Notify</div>
+            <div class="action-desc">Execute ML risk prediction and email students</div>
+        </a>
+        <a href="{{ url_for('report') }}" class="action-card">
+            <span class="action-icon">📄</span>
+            <div class="action-title">Generate Report</div>
+            <div class="action-desc">Create a CSV of at-risk students</div>
+        </a>
+        <a href="{{ url_for('download_report') }}" class="action-card">
+            <span class="action-icon">⬇️</span>
+            <div class="action-title">Download Report</div>
+            <div class="action-desc">Export the latest generated report</div>
+        </a>
+        <a href="{{ url_for('upload') }}" class="action-card">
+            <span class="action-icon">📤</span>
+            <div class="action-title">Upload Data</div>
+            <div class="action-desc">Import new student information</div>
+        </a>
+    </div>
+
+    <div class="data-table-container fade-in">
+        <div class="table-header">
+            <div class="table-title">
+                <span>👥</span> Student Risk Overview
+            </div>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>ML Risk Score</th>
+                    <th>Risk Level</th>
+                    <th>Predicted Factors</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>{{ student.student_id }}</td>
+                    <td>{{ student.name }}</td>
+                    <td>{{ "%.1f"|format(student.ml_risk_score) }}%</td>
+                    <td><span class="status-badge {{ student.risk_level.lower() }}">{{ student.risk_level }}</span></td>
+                    <td>{{ student.risk_reason }}</td>
+                    <td><button class="btn" onclick="viewStudentDetails('{{ student.student_id }}')">View Details</button></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="studentModalBackdrop"></div>
+<div class="modal" id="studentModal">
+    <div class="modal-header">
+        <div>
+            <h3 id="modalName">Student Name</h3>
+            <p id="modalStudentId">Student ID</p>
+        </div>
+        <button class="modal-close-btn" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+        <div class="modal-risk-banner" id="modalRiskBanner">
+            <div id="modalRiskLevel" class="risk-level-text"></div>
+            <div class="risk-score-box">
+                <strong>AI Risk Score:</strong> <span id="modalMlScore"></span>
+            </div>
+            <p><strong>Predicted Factors:</strong> <span id="modalRiskReason"></span></p>
+        </div>
+        <div class="modal-grid">
+            <div class="modal-card">
+                <h4>👤 Personal Details</h4>
+                <div class="detail-row"><span class="detail-label">Age</span><span id="modalAge"></span></div>
+                <div class="detail-row"><span class="detail-label">Gender</span><span id="modalGender"></span></div>
+                <div class="detail-row"><span class="detail-label">Email</span><span id="modalEmail"></span></div>
+            </div>
+            <div class="modal-card">
+                <h4>🎓 Academic Profile</h4>
+                <div class="detail-row"><span class="detail-label">Year of Study</span><span id="modalYear"></span></div>
+                <div class="detail-row"><span class="detail-label">Avg. Attendance</span><span id="modalAvgAttendance"></span></div>
+                <div class="detail-row"><span class="detail-label">Semester GPA</span><span id="modalGpa"></span></div>
+            </div>
+            <div class="modal-card modal-card-full">
+                <h4>📚 Subject-wise Performance</h4>
+                <div class="subject-grid">
+                    <div class="detail-row"><span class="detail-label">Mathematics</span><span id="modalMarksMath"></span></div>
+                    <div class="detail-row"><span class="detail-label">Physics</span><span id="modalMarksPhysics"></span></div>
+                    <div class="detail-row"><span class="detail-label">Chemistry</span><span id="modalMarksChemistry"></span></div>
+                    <div class="detail-row"><span class="detail-label">Computer Science</span><span id="modalMarksCS"></span></div>
+                    <div class="detail-row"><span class="detail-label">Lab 1</span><span id="modalMarksLab1"></span></div>
+                    <div class="detail-row"><span class="detail-label">Lab 2</span><span id="modalMarksLab2"></span></div>
+                </div>
+            </div>
+            <div class="modal-card">
+                <h4>💳 Financial Status</h4>
+                <div class="detail-row"><span class="detail-label">Fee Status</span><span id="modalFeeStatus"></span></div>
+                <div class="detail-row"><span class="detail-label">Scholarship</span><span id="modalScholarship"></span></div>
+                <div class="detail-row"><span class="detail-label">Loan</span><span id="modalLoan"></span></div>
+            </div>
+            <div class="modal-card">
+                <h4>⚖️ Behavioral & Health</h4>
+                <div class="detail-row"><span class="detail-label">Disciplinary Actions</span><span id="modalDisciplinary"></span></div>
+                <div class="detail-row"><span class="detail-label">Total Leaves</span><span id="modalLeaves"></span></div>
+                <div class="detail-row"><span class="detail-label">Chronic Health Issue</span><span id="modalHealth"></span></div>
+            </div>
+            <div class="modal-card">
+                <h4>💡 Engagement</h4>
+                <div class="detail-row"><span class="detail-label">LMS Logins / Week</span><span id="modalLmsLogins"></span></div>
+                <div class="detail-row"><span class="detail-label">Class Participation</span><span id="modalParticipation"></span></div>
+                <div class="detail-row"><span class="detail-label">Counseling Sessions</span><span id="modalCounseling"></span></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+/* --- This is the full design from your provided file --- */
+* { box-sizing: border-box; }
+body { padding: 0 !important; } /* Override base template padding */
+.container { max-width: 1400px; margin: 0 auto; padding: 2rem; }
+.page-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2.5rem; border-radius: 1.5rem; margin-bottom: 2rem; box-shadow: 0 20px 60px rgba(102, 126, 234, 0.3); position: relative; overflow: hidden; }
+.page-header::before { content: ''; position: absolute; top: -50%; right: -10%; width: 300px; height: 300px; background: rgba(255, 255, 255, 0.1); border-radius: 50%; animation: float 6s ease-in-out infinite; }
+.page-header h1 { font-size: 2.5rem; font-weight: 800; margin-bottom: 0.5rem; position: relative; z-index: 1; }
+.page-header p { font-size: 1.1rem; opacity: 0.9; position: relative; z-index: 1; }
+.quick-actions-section { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem; }
+.action-card { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); border: 1px solid rgba(100, 116, 139, 0.3); border-radius: 1rem; padding: 1.5rem; text-decoration: none; color: #f8fafc; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); position: relative; overflow: hidden; cursor: pointer; }
+.action-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(102, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%); opacity: 0; transition: opacity 0.3s ease; }
+.action-card:hover { transform: translateY(-8px); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4); border-color: #667eea; }
+.action-card:hover::before { opacity: 1; }
+.action-icon { font-size: 2.5rem; margin-bottom: 1rem; display: block; position: relative; z-index: 1; }
+.action-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; position: relative; z-index: 1; }
+.action-desc { font-size: 0.875rem; color: #cbd5e1; position: relative; z-index: 1; }
+.data-table-container { background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(10px); border: 1px solid rgba(100, 116, 139, 0.3); border-radius: 1.5rem; overflow: hidden; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); }
+.table-header { background: linear-gradient(135deg, #1e293b 0%, #334155 100%); padding: 1.5rem 2rem; border-bottom: 1px solid rgba(100, 116, 139, 0.3); }
+.table-title { font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 0.75rem; }
+table { width: 100%; border-collapse: collapse; }
+thead th { background: rgba(15, 23, 42, 0.6); color: #cbd5e1; font-weight: 600; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; padding: 1.25rem 1.5rem; text-align: left; border-bottom: 2px solid rgba(102, 126, 234, 0.2); }
+tbody tr { border-bottom: 1px solid rgba(100, 116, 139, 0.2); transition: all 0.3s ease; }
+tbody tr:hover { background: rgba(102, 126, 234, 0.1); }
+tbody td { padding: 1.25rem 1.5rem; color: #e2e8f0; }
+.status-badge { display: inline-flex; align-items: center; padding: 0.5rem 1rem; border-radius: 2rem; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); }
+.status-badge.red { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; }
+.status-badge.yellow { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); color: white; }
+.status-badge.green { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; }
+.btn { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.75rem; font-weight: 600; font-size: 0.875rem; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3); }
+.btn-secondary.btn-sm { padding: 0.5rem 1rem; font-size: 0.8rem;}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4); }
+.modal-backdrop { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(8px); z-index: 100; display: none; }
+.modal { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: linear-gradient(135deg, #1e293b 0%, #334155 100%); width: 90%; max-width: 1000px; max-height: 90vh; border-radius: 1.5rem; z-index: 101; color: #f8fafc; box-shadow: 0 25px 80px rgba(0, 0, 0, 0.6); display: none; flex-direction: column; overflow: hidden; border: 1px solid rgba(102, 126, 234, 0.3); }
+.modal-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2rem; display: flex; justify-content: space-between; align-items: center; }
+.modal-header h3 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.25rem; }
+.modal-header p { opacity: 0.9; font-size: 0.875rem; }
+.modal-close-btn { background: rgba(255, 255, 255, 0.2); border: none; width: 40px; height: 40px; border-radius: 50%; font-size: 1.5rem; color: white; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; }
+.modal-close-btn:hover { background: rgba(255, 255, 255, 0.3); transform: rotate(90deg); }
+.modal-body { padding: 2rem; overflow-y: auto; }
+.modal-risk-banner { padding: 1.5rem; border-radius: 1rem; margin-bottom: 2rem; border-left: 5px solid; position: relative; overflow: hidden; }
+.modal-risk-banner::before { content: ''; position: absolute; top: -50%; right: -10%; width: 200px; height: 200px; background: rgba(255, 255, 255, 0.05); border-radius: 50%; }
+.modal-risk-banner.red { background: rgba(239, 68, 68, 0.15); border-color: #ef4444; }
+.modal-risk-banner.yellow { background: rgba(245, 158, 11, 0.15); border-color: #f59e0b; }
+.modal-risk-banner.green { background: rgba(16, 185, 129, 0.15); border-color: #10b981; }
+.risk-level-text { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.75rem; }
+.risk-score-box { background: rgba(15, 23, 42, 0.8); padding: 0.75rem 1.25rem; border-radius: 0.75rem; display: inline-block; margin-bottom: 1rem; font-size: 1.1rem; font-weight: 600; }
+.modal-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+.modal-card { background: rgba(15, 23, 42, 0.6); padding: 1.5rem; border-radius: 1rem; border: 1px solid rgba(100, 116, 139, 0.3); transition: all 0.3s ease; }
+.modal-card:hover { transform: translateY(-4px); box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3); border-color: rgba(102, 126, 234, 0.5); }
+.modal-card h4 { font-size: 1.1rem; font-weight: 700; margin-bottom: 1.25rem; padding-bottom: 0.75rem; border-bottom: 2px solid rgba(102, 126, 234, 0.3); display: flex; align-items: center; gap: 0.5rem; }
+.detail-row { display: flex; justify-content: space-between; padding: 0.75rem 0; font-size: 0.9rem; border-bottom: 1px solid rgba(100, 116, 139, 0.2); }
+.detail-row:last-child { border-bottom: none; }
+.detail-label { color: #94a3b8; font-weight: 500; }
+.modal-card-full { grid-column: 1 / -1; }
+.subject-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem 2rem; }
+@keyframes float { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-20px) rotate(5deg); } }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.fade-in { animation: fadeIn 0.5s ease-out; }
+::-webkit-scrollbar { width: 10px; }
+::-webkit-scrollbar-track { background: rgba(30, 41, 59, 0.5); }
+::-webkit-scrollbar-thumb { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 5px; }
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+const modal = document.getElementById('studentModal');
+const backdrop = document.getElementById('studentModalBackdrop');
+function closeModal() { modal.style.display = 'none'; backdrop.style.display = 'none'; }
+backdrop.onclick = closeModal;
+
+async function viewStudentDetails(studentId) {
+    try {
+        const response = await fetch(`/student_details/${studentId}`);
+        if (!response.ok) { throw new Error('Network response was not ok'); }
+        const data = await response.json();
+
+        // Header
+        document.getElementById('modalName').textContent = data.name;
+        document.getElementById('modalStudentId').textContent = `ID: ${data.student_id}`;
+        
+        // Risk Banner
+        const banner = document.getElementById('modalRiskBanner');
+        banner.className = 'modal-risk-banner ' + data.risk_level.toLowerCase();
+        const riskText = data.risk_level;
+        document.getElementById('modalRiskLevel').textContent = riskText + ' Risk';
+        document.getElementById('modalMlScore').textContent = data.ml_risk_score;
+        document.getElementById('modalRiskReason').textContent = data.risk_reason;
+        
+        // Personal & Academic
+        document.getElementById('modalEmail').textContent = data.email;
+        document.getElementById('modalAge').textContent = data.age;
+        document.getElementById('modalGender').textContent = data.gender;
+        document.getElementById('modalYear').textContent = data.year_of_study;
+        document.getElementById('modalAvgAttendance').textContent = data.avg_attendance;
+        document.getElementById('modalGpa').textContent = data.gpa;
+
+        // Subject Marks
+        document.getElementById('modalMarksMath').textContent = data.marks_math;
+        document.getElementById('modalMarksPhysics').textContent = data.marks_physics;
+        document.getElementById('modalMarksChemistry').textContent = data.marks_chemistry;
+        document.getElementById('modalMarksCS').textContent = data.marks_cs;
+        document.getElementById('modalMarksLab1').textContent = data.marks_lab1;
+        document.getElementById('modalMarksLab2').textContent = data.marks_lab2;
+
+        // Financial
+        document.getElementById('modalFeeStatus').textContent = data.fee_status;
+        document.getElementById('modalScholarship').textContent = data.scholarship;
+        document.getElementById('modalLoan').textContent = data.loan;
+
+        // Behavioral & Health
+        document.getElementById('modalDisciplinary').textContent = data.disciplinary_actions;
+        document.getElementById('modalLeaves').textContent = data.total_leaves;
+        document.getElementById('modalHealth').textContent = data.health_issue;
+
+        // Engagement
+        document.getElementById('modalLmsLogins').textContent = data.lms_logins;
+        document.getElementById('modalParticipation').textContent = data.class_participation;
+        document.getElementById('modalCounseling').textContent = data.counseling_sessions;
+        
+        modal.style.display = 'flex';
+        backdrop.style.display = 'block';
+    } catch (error) {
+        console.error('Failed to fetch student details:', error);
+        alert('Could not load student details. Please check the console for errors.');
+    }
+}
+</script>
+{% endblock %}
