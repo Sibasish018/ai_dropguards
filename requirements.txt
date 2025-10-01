@@ -7,4 +7,6 @@ numpy
 cryptography
 gunicorn
 uvicorn
+psycopg2-binary
+
 
