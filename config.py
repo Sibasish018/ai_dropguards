@@ -1,7 +1,7 @@
+import os
 
-DB_URI = "mysql+pymysql://root:sibasish018@localhost/dp"
-
-SECRET_KEY = "mysecret123"
+DB_URI = os.environ.get("DB_URI", "sqlite:///local.db")  
+SECRET_KEY = os.environ.get("SECRET_KEY", "devsecret")
 
 MAIL_SERVER = "smtp.gmail.com"
 MAIL_PORT = 587
