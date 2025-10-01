@@ -6,4 +6,5 @@ joblib
 numpy
 cryptography
 gunicorn
+uvicorn
 
