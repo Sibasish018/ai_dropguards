@@ -5,4 +5,5 @@ pandas
 joblib
 numpy
 cryptography
+gunicorn
 
