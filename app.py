@@ -20,66 +20,57 @@ db.init_app(app)
 
 def create_tables_and_seed():
     with app.app_context():
-        logging.info("Ensuring tables exist...")
-        db.create_all()   # ✅ Only creates if not exists
+        # This will force the database to be reset on every startup, ensuring fresh data.
+        logging.info("Forcing a full database reset to load all required columns...")
+        db.drop_all() 
+        db.create_all()
 
         if not os.path.exists(app.config["UPLOAD_FOLDER"]):
             os.makedirs(app.config["UPLOAD_FOLDER"])
-
         if not Admin.query.first():
             db.session.add(Admin(email="admin@test.com", password="admin"))
             db.session.commit()
             logging.info("Admin user seeded.")
-        
         try:
             df = pd.read_csv("student_risk_dataset_precise.csv")
             logging.info(f"CSV loaded. Seeding {len(df)} students...")
-
+            
+            # Clean data before loading
             for col in df.select_dtypes(include=['object']).columns:
                 df[col] = df[col].fillna('')
             for col in df.select_dtypes(include=['number']).columns:
                 df[col] = df[col].fillna(0)
 
-            if not Student.query.first():   # ✅ Only seed if empty
-                for _, row in df.iterrows():
-                    student = Student(
-                        student_id=row["Student_ID"],
-                        name=row["Student_Name"],
-                        email=row["Email_ID"],
-                        password=row["Student_ID"],
-                        attendance=row["Avg_Attendance"],
-                        marks=row["Avg_Performance"],
-                        fee_status=row["Fee_Status"],
-                        Age=row["Age"], Gender=row["Gender"],
-                        Year_of_Study=row["Year_of_Study"],
-                        Parent_Annual_Income=row["Parent_Annual_Income"],
-                        Scholarship_Status=row["Scholarship_Status"],
-                        Loan_Status=row["Loan_Status"],
-                        Chronic_Health_Issue=row["Chronic_Health_Issue"],
-                        Health_Issue_Type=row["Health_Issue_Type"],
-                        Total_Leaves=row["Total_Leaves"],
-                        Counseling_Sessions_Attended=row["Counseling_Sessions_Attended"],
-                        Disciplinary_Actions=row["Disciplinary_Actions"],
-                        Class_Participation=row["Class_Participation"],
-                        Extracurricular_Activities_Score=row["Extracurricular_Activities_Score"],
-                        LMS_Logins_Per_Week=row["LMS_Logins_Per_Week"],
-                        Avg_Attendance=row["Avg_Attendance"],
-                        Avg_Performance=row["Avg_Performance"],
-                        Semester_GPA=row["Semester_GPA"],
-                        Marks_Math=row["Marks_Math"],
-                        Marks_Physics=row["Marks_Physics"],
-                        Marks_Chemistry=row["Marks_Chemistry"],
-                        Marks_CS=row["Marks_CS"],
-                        Marks_Lab1=row["Marks_Lab1"],
-                        Marks_Lab2=row["Marks_Lab2"]
-                    )
-                    db.session.add(student)
-                db.session.commit()
-                logging.info("Student seeding complete.")
+            # This constructor is now complete and matches the model and predictor.
+            for _, row in df.iterrows():
+                student = Student(
+                    student_id=row["Student_ID"], name=row["Student_Name"], email=row["Email_ID"], password=row["Student_ID"],
+                    attendance=row["Avg_Attendance"], marks=row["Avg_Performance"], fee_status=row["Fee_Status"],
+                    Age=row["Age"], Gender=row["Gender"], Year_of_Study=row["Year_of_Study"],
+                    Parent_Annual_Income=row["Parent_Annual_Income"], Scholarship_Status=row["Scholarship_Status"],
+                    Loan_Status=row["Loan_Status"], Chronic_Health_Issue=row["Chronic_Health_Issue"],
+                    Health_Issue_Type=row["Health_Issue_Type"], Total_Leaves=row["Total_Leaves"],
+                    Counseling_Sessions_Attended=row["Counseling_Sessions_Attended"],
+                    Disciplinary_Actions=row["Disciplinary_Actions"], Class_Participation=row["Class_Participation"],
+                    Extracurricular_Activities_Score=row["Extracurricular_Activities_Score"],
+                    LMS_Logins_Per_Week=row["LMS_Logins_Per_Week"], Avg_Attendance=row["Avg_Attendance"],
+                    Avg_Performance=row["Avg_Performance"], Semester_GPA=row["Semester_GPA"],
+                    
+                    # **FIX: Add the subject marks from the CSV file here**
+                    Marks_Math=row["Marks_Math"],
+                    Marks_Physics=row["Marks_Physics"],
+                    Marks_Chemistry=row["Marks_Chemistry"],
+                    Marks_CS=row["Marks_CS"],
+                    Marks_Lab1=row["Marks_Lab1"],
+                    Marks_Lab2=row["Marks_Lab2"]
+                )
+                db.session.add(student)
+            
+            db.session.commit()
+            logging.info("Student seeding complete with all columns.")
         except Exception as e:
             logging.error(f"FATAL ERROR during CSV seeding: {e}")
             db.session.rollback()
-
 with app.app_context():
     create_tables_and_seed()
 
@@ -232,5 +223,3 @@ def logout():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
