@@ -2,9 +2,6 @@ Flask
 Flask-SQLAlchemy
 PyMySQL
 pandas
-scikit-learn==1.3.0
 joblib
-python-dotenv
-gunicorn
 numpy==1.24.4
 cryptography
