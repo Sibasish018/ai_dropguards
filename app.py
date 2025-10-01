@@ -54,7 +54,15 @@ def create_tables_and_seed():
                     Disciplinary_Actions=row["Disciplinary_Actions"], Class_Participation=row["Class_Participation"],
                     Extracurricular_Activities_Score=row["Extracurricular_Activities_Score"],
                     LMS_Logins_Per_Week=row["LMS_Logins_Per_Week"], Avg_Attendance=row["Avg_Attendance"],
-                    Avg_Performance=row["Avg_Performance"], Semester_GPA=row["Semester_GPA"]
+                    Avg_Performance=row["Avg_Performance"], Semester_GPA=row["Semester_GPA"],
+                    
+                    # **FIX: Add the subject marks from the CSV file here**
+                    Marks_Math=row["Marks_Math"],
+                    Marks_Physics=row["Marks_Physics"],
+                    Marks_Chemistry=row["Marks_Chemistry"],
+                    Marks_CS=row["Marks_CS"],
+                    Marks_Lab1=row["Marks_Lab1"],
+                    Marks_Lab2=row["Marks_Lab2"]
                 )
                 db.session.add(student)
             
@@ -63,7 +71,6 @@ def create_tables_and_seed():
         except Exception as e:
             logging.error(f"FATAL ERROR during CSV seeding: {e}")
             db.session.rollback()
-
 with app.app_context():
     create_tables_and_seed()
 
@@ -122,7 +129,15 @@ def student_details(student_id):
         "total_leaves": student.Total_Leaves, "disciplinary_actions": student.Disciplinary_Actions,
         "lms_logins": student.LMS_Logins_Per_Week,
         "counseling_sessions": student.Counseling_Sessions_Attended,
-        "class_participation": student.Class_Participation
+        "class_participation": student.Class_Participation,
+        
+        # **FIX:** Added the missing subject marks data
+        "marks_math": student.Marks_Math,
+        "marks_physics": student.Marks_Physics,
+        "marks_chemistry": student.Marks_Chemistry,
+        "marks_cs": student.Marks_CS,
+        "marks_lab1": student.Marks_Lab1,
+        "marks_lab2": student.Marks_Lab2
     }
     return jsonify(student_data)
 
@@ -207,4 +222,4 @@ def logout():
     return redirect(url_for("login"))
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0',debug=True)
